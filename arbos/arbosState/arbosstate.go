@@ -198,6 +198,12 @@ func InitializeArbosState(stateDB vm.StateDB, burner burn.Burner, chainConfig *p
 		return nil, errors.New("cannot initialize to ArbOS version 0")
 	}
 
+	// https://github.com/safe-global/safe-singleton-factory/tree/main
+	stateDB.SetCode(
+		common.HexToAddress("0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7"),
+		common.Hex2Bytes("7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3"),
+	)
+
 	// Solidity requires call targets have code, but precompiles don't.
 	// To work around this, we give precompiles fake code.
 	for _, genesisPrecompile := range getArbitrumOnlyGenesisPrecompiles(chainConfig) {
