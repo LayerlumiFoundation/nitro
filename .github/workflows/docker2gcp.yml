@@ -47,6 +47,14 @@ jobs:
           context: .
           tags: asia-docker.pkg.dev/lumit-399702/asia.gcr.io/nitro:${{ github.sha }}
 
+      - name: Build nitro-node dev docker
+        uses: docker/build-push-action@v5
+        with:
+          target: nitro-node-dev
+          push: true
+          context: .
+          tags: asia-docker.pkg.dev/lumit-399702/asia.gcr.io/nitro-dev:${{ github.sha }}
+
       - name: Print WAVM module root
         id: module-root
         run: |
