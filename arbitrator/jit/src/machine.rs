@@ -125,7 +125,7 @@ pub fn create(opts: &Opts, env: WasmEnv) -> (Instance, FunctionEnv<WasmEnv>, Sto
             "github.com/offchainlabs/nitro/arbcompress.brotliDecompress" => func!(arbcompress::brotli_decompress),
         },
         "env" => {
-            "memory" => instance_memory,
+            "mem" => instance_memory,
         }
     };
 
