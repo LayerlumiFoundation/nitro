@@ -71,6 +71,11 @@ pub fn create(opts: &Opts, env: WasmEnv) -> (Instance, FunctionEnv<WasmEnv>, Sto
         };
     }
 
+    let instance_memory =  match Memory::new(&mut store, MemoryType::new(1, Some(65536), false))  {
+        Ok(memory) => memory,
+        Err(err) => panic!("Failed to create memory: {}", err.red()),
+    };
+
     let imports = imports! {
         "go" => {
             "debug" => native!(runtime::go_debug),
@@ -119,20 +124,18 @@ pub fn create(opts: &Opts, env: WasmEnv) -> (Instance, FunctionEnv<WasmEnv>, Sto
             "github.com/offchainlabs/nitro/arbcompress.brotliCompress" => func!(arbcompress::brotli_compress),
             "github.com/offchainlabs/nitro/arbcompress.brotliDecompress" => func!(arbcompress::brotli_decompress),
         },
+        "env" => {
+            "memory" => instance_memory,
+        }
     };
 
     let instance = match Instance::new(&mut store, &module, &imports) {
         Ok(instance) => instance,
         Err(err) => panic!("Failed to create instance: {}", err.red()),
     };
-    // let memory = match instance.exports.get_memory("mem") {
-    //     Ok(memory) => memory.clone(),
-    //     Err(err) => panic!("Failed to get memory: {}", err.red()),
-    // };
-
-    let memory =  match Memory::new(&mut store, MemoryType::new(2, Some(65536), false))  {
-        Ok(memory) => memory,
-        Err(err) => panic!("Failed to create memory: {}", err.red()),
+    let memory = match instance.exports.get_memory("mem") {
+        Ok(memory) => memory.clone(),
+        Err(err) => panic!("Failed to get memory: {}", err.red()),
     };
 
     let resume = match instance.exports.get_typed_function(&store, "resume") {
