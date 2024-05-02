@@ -11,7 +11,7 @@ use eyre::{bail, Result, WrapErr};
 use sha3::{Digest, Keccak256};
 use thiserror::Error;
 use wasmer::{
-    imports, CompilerConfig, Function, FunctionEnv, FunctionEnvMut, Instance, Memory, Module,
+    imports, CompilerConfig, Function, FunctionEnv, FunctionEnvMut, Instance, Memory, MemoryType, Module,
     RuntimeError, Store, TypedFunction,
 };
 use wasmer_compiler_cranelift::Cranelift;
@@ -125,10 +125,13 @@ pub fn create(opts: &Opts, env: WasmEnv) -> (Instance, FunctionEnv<WasmEnv>, Sto
         Ok(instance) => instance,
         Err(err) => panic!("Failed to create instance: {}", err.red()),
     };
-    let memory = match instance.exports.get_memory("mem") {
-        Ok(memory) => memory.clone(),
-        Err(err) => panic!("Failed to get memory: {}", err.red()),
-    };
+    // let memory = match instance.exports.get_memory("mem") {
+    //     Ok(memory) => memory.clone(),
+    //     Err(err) => panic!("Failed to get memory: {}", err.red()),
+    // };
+
+    let memory = Memory::new(&mut store, MemoryType::new(2, Some(327680), false));
+
     let resume = match instance.exports.get_typed_function(&store, "resume") {
         Ok(resume) => resume,
         Err(err) => panic!("Failed to get the {} func: {}", "resume".red(), err.red()),
