@@ -130,7 +130,7 @@ pub fn create(opts: &Opts, env: WasmEnv) -> (Instance, FunctionEnv<WasmEnv>, Sto
     //     Err(err) => panic!("Failed to get memory: {}", err.red()),
     // };
 
-    let memory =  match Memory::new(&mut store, MemoryType::new(2, Some(327680), false))  {
+    let memory =  match Memory::new(&mut store, MemoryType::new(2, Some(65536), false))  {
         Ok(memory) => memory,
         Err(err) => panic!("Failed to create memory: {}", err.red()),
     };
