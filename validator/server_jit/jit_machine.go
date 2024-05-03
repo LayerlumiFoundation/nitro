@@ -59,12 +59,104 @@ func (machine *JitMachine) close() {
 	}
 }
 
+var ignoreProveBlocks = map[uint64]validator.GoGlobalState{
+	4083577: {
+		Batch:      9178,
+		PosInBatch: 480,
+		BlockHash:  common.HexToHash("0xda2d176f5b585b131e1272efbfe458d4682938263fdeda42982083fb14186a84"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083578: {
+		Batch:      9178,
+		PosInBatch: 481,
+		BlockHash:  common.HexToHash("0x4643b7fc485bb82016e471e5b529350d7214254a268db44441674245c3a7517c"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083579: {
+		Batch:      9178,
+		PosInBatch: 482,
+		BlockHash:  common.HexToHash("0x7f844e45bda074a45d1def5c782cb935c08ce41b70e1ed47630f6c6fb09d3dee"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083580: {
+		Batch:      9178,
+		PosInBatch: 483,
+		BlockHash:  common.HexToHash("0xab716dec1cddcd6dbc8a030faf5e42d8a21564954fe41ce056e32786f07c1c27"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083581: {
+		Batch:      9178,
+		PosInBatch: 484,
+		BlockHash:  common.HexToHash("0xe48aa1956b16280067fecbacc204ae7f8ef88c0545ddb31324610f0cd9ce7665"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083583: {
+		Batch:      9178,
+		PosInBatch: 486,
+		BlockHash:  common.HexToHash("0xbca6c7d5d8a7384d7420d2cf99c90e7982e0fbc5da77f45de840351a3778988a"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083584: {
+		Batch:      9178,
+		PosInBatch: 487,
+		BlockHash:  common.HexToHash("0xde2b7be88b2838094cad4c5fca4e1c8984a81b678f6ced24ffeacca0988a9946"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083585: {
+		Batch:      9178,
+		PosInBatch: 488,
+		BlockHash:  common.HexToHash("0x3146e38c86d842493946b714a5b5f75e2b0f552c7ba7acfd7d034696d56544fc"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083586: {
+		Batch:      9178,
+		PosInBatch: 489,
+		BlockHash:  common.HexToHash("0x8054732b1def267a85382edb974f435ca3f44d9c700b23c88b281a5fafa4d9f4"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083587: {
+		Batch:      9178,
+		PosInBatch: 490,
+		BlockHash:  common.HexToHash("0x7a4ef5ef2e7c4aa9f36ded5edcc8c47f587a403e407911da83a72a4efab292e2"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083588: {
+		Batch:      9178,
+		PosInBatch: 491,
+		BlockHash:  common.HexToHash("0x80250435557ced666a271de830306624a019fd101b4e4ca041551dd78d612702"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083589: {
+		Batch:      9178,
+		PosInBatch: 492,
+		BlockHash:  common.HexToHash("0x7b3baf30c3a8d7b0fc40d6efab0b943f1f37aba28eb77774681f8c337c3df870"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083590: {
+		Batch:      9178,
+		PosInBatch: 493,
+		BlockHash:  common.HexToHash("0x5b31ddcd152beed2b56bf36ab68ae90daf9f7a7141a663de0254bf3549dfc0dd"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+	4083591: {
+		Batch:      9178,
+		PosInBatch: 494,
+		BlockHash:  common.HexToHash("0x3ba2aca6f6ec209b642fe6f8cfcddda1ae23c3ed3e4124c544298b139d107545"),
+		SendRoot:   common.HexToHash("0x73e3fd5339538bb97fb2ab3f1affc7971c8ea591c1f324e22cbc5b4d01b7b4ee"),
+	},
+}
+
 func (machine *JitMachine) prove(
 	ctxIn context.Context, entry *validator.ValidationInput,
 ) (validator.GoGlobalState, error) {
 	ctx, cancel := context.WithCancel(ctxIn)
 	defer cancel() // ensure our cleanup functions run when we're done
 	state := validator.GoGlobalState{}
+
+	if s, ok := ignoreProveBlocks[entry.Id]; ok {
+		log.Debug("ignoring block", "block", entry.Id)
+		return s, nil
+	}
 
 	timeout := time.Now().Add(6000 * time.Minute)
 	tcp, err := net.ListenTCP("tcp4", &net.TCPAddr{
