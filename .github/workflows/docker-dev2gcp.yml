@@ -1,0 +1,65 @@
+name: Docker dev build to gcp
+run-name: Docker dev build to gcp triggered from @${{ github.actor }} of ${{ github.head_ref }}
+
+on:
+  workflow_dispatch:
+  merge_group:
+  push:
+    tags:
+      - '*'
+    branches:
+      - main
+
+jobs:
+  docker:
+    name: Docker build to gcp
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCP_DOCKER_PUBLISHER_SECRET }}'
+          token_format: access_token
+
+      - name: Login to GCR
+        uses: docker/login-action@v3
+        with:
+          registry: asia-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+
+      - name: Build nitro-node dev docker
+        uses: docker/build-push-action@v5
+        with:
+          target: nitro-node-dev
+          push: true
+          context: .
+          tags: asia-docker.pkg.dev/lumit-399702/asia.gcr.io/nitro-dev:${{ github.sha }}
+
+      - name: Print WAVM module root
+        id: module-root
+        run: |
+          # Unfortunately, `docker cp` seems to always result in a "permission denied"
+          # We work around this by piping a tarball through stdout
+          docker run --rm --entrypoint tar asia-docker.pkg.dev/lumit-399702/asia.gcr.io/nitro:${{ github.sha }} -cf - target/machines/latest | tar xf -
+          module_root="$(cat "target/machines/latest/module-root.txt")"
+          echo "name=module-root=$module_root" >> $GITHUB_STATE
+          echo -e "\x1b[1;34mWAVM module root:\x1b[0m $module_root"
+
+      - name: Upload WAVM machine as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: wavm-machine-${{ steps.module-root.outputs.module-root }}
+          path: target/machines/latest/*
+          if-no-files-found: error
