@@ -80,7 +80,7 @@ COPY --from=contracts-builder workspace/contracts/build/contracts/src/precompile
 COPY --from=contracts-builder workspace/.make/ .make/
 RUN PATH="$PATH:/usr/local/go/bin" NITRO_BUILD_IGNORE_TIMESTAMPS=1 make build-wasm-bin
 
-FROM rust:1.68-slim-bullseye as prover-header-builder
+FROM rust:1.74-slim-bullseye as prover-header-builder
 WORKDIR /workspace
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
