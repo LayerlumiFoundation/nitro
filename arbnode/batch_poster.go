@@ -6,7 +6,6 @@ package arbnode
 import (
 	"bytes"
 	"context"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"math"
@@ -18,7 +17,6 @@ import (
 	"github.com/andybalholm/brotli"
 	"github.com/spf13/pflag"
 
-	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -680,31 +678,32 @@ func (b *BatchPoster) estimateGas(ctx context.Context, sequencerMessage []byte, 
 	// However, we set nextMsgNum to 1 because it is necessary for a correct estimation for the final to be non-zero.
 	// Because we're likely estimating against older state, this might not be the actual next message,
 	// but the gas used should be the same.
-	data, err := b.encodeAddBatch(abi.MaxUint256, 0, 1, sequencerMessage, delayedMessages)
-	if err != nil {
-		return 0, err
-	}
-	gas, err := b.l1Reader.Client().EstimateGas(ctx, ethereum.CallMsg{
-		From: b.dataPoster.Sender(),
-		To:   &b.seqInboxAddr,
-		Data: data,
-	})
-	if err != nil {
-		sequencerMessageHeader := sequencerMessage
-		if len(sequencerMessageHeader) > 33 {
-			sequencerMessageHeader = sequencerMessageHeader[:33]
-		}
-		log.Warn(
-			"error estimating gas for batch",
-			"err", err,
-			"delayedMessages", delayedMessages,
-			"safeDelayedMessages", safeDelayedMessages,
-			"sequencerMessageHeader", hex.EncodeToString(sequencerMessageHeader),
-			"sequencerMessageLen", len(sequencerMessage),
-		)
-		return 0, fmt.Errorf("error estimating gas for batch: %w", err)
-	}
-	return gas + config.ExtraBatchGas, nil
+	// data, err := b.encodeAddBatch(abi.MaxUint256, 0, 1, sequencerMessage, delayedMessages)
+	// if err != nil {
+	// 	return 0, err
+	// }
+	return config.ExtraBatchGas, nil
+	// gas, err := b.l1Reader.Client().EstimateGas(ctx, ethereum.CallMsg{
+	// 	From: b.dataPoster.Sender(),
+	// 	To:   &b.seqInboxAddr,
+	// 	Data: data,
+	// })
+	// if err != nil {
+	// 	sequencerMessageHeader := sequencerMessage
+	// 	if len(sequencerMessageHeader) > 33 {
+	// 		sequencerMessageHeader = sequencerMessageHeader[:33]
+	// 	}
+	// 	log.Warn(
+	// 		"error estimating gas for batch",
+	// 		"err", err,
+	// 		"delayedMessages", delayedMessages,
+	// 		"safeDelayedMessages", safeDelayedMessages,
+	// 		"sequencerMessageHeader", hex.EncodeToString(sequencerMessageHeader),
+	// 		"sequencerMessageLen", len(sequencerMessage),
+	// 	)
+	// 	return 0, fmt.Errorf("error estimating gas for batch: %w", err)
+	// }
+	// return gas + config.ExtraBatchGas, nil
 }
 
 const ethPosBlockTime = 12 * time.Second

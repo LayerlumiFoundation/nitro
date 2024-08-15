@@ -115,7 +115,6 @@ func NewInboxReader(tracker *InboxTracker, client arbutil.L1Interface, l1Reader 
 }
 
 func (r *InboxReader) Start(ctxIn context.Context) error {
-	return nil
 	r.StopWaiter.Start(ctxIn, r)
 	hadError := false
 	r.CallIteratively(func(ctx context.Context) time.Duration {
